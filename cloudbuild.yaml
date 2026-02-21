@@ -1,0 +1,44 @@
+substitutions:
+  _PROJECT_ID: YOUR_GCP_PROJECT_ID        # TODO: replace with your GCP project ID
+  _REGION: YOUR_REGION                    # TODO: replace with deployment region (e.g. us-central1)
+  _REPOSITORY: YOUR_ARTIFACT_REPO         # TODO: replace with Artifact Registry repo name
+  _SERVICE_NAME: scanning-app             # TODO: update if you want a different Cloud Run service name
+
+steps:
+  # Build the Docker image
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - build
+      - -t
+      - ${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE_NAME}:$COMMIT_SHA
+      - -t
+      - ${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE_NAME}:latest
+      - .
+
+  # Push both tags to Artifact Registry
+  - name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - --all-tags
+      - ${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE_NAME}
+
+  # Deploy to Cloud Run
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - ${_SERVICE_NAME}
+      - --image=${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE_NAME}:$COMMIT_SHA
+      - --region=${_REGION}
+      - --platform=managed
+      - --port=8080
+      - --allow-unauthenticated            # TODO: remove if the service should be private
+      - --set-secrets=ANTHROPIC_API_KEY=ANTHROPIC_API_KEY:latest  # TODO: ensure this secret exists in Secret Manager
+
+images:
+  - ${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE_NAME}:$COMMIT_SHA
+  - ${_REGION}-docker.pkg.dev/${_PROJECT_ID}/${_REPOSITORY}/${_SERVICE_NAME}:latest
+
+options:
+  logging: CLOUD_LOGGING_ONLY
