@@ -1,5 +1,6 @@
 import base64
 import json
+import logging
 
 from .config import ALLOWED_EXTENSIONS, MIME_TYPES, CLAUDE_MODEL, CLAUDE_MAX_TOKENS, SYSTEM_PROMPT
 
@@ -60,10 +61,10 @@ def parse_receipt_image(image_bytes: bytes, ext: str, client) -> dict:
     raw_text = response.content[0].text.strip()
 
     try:
-        print(raw_text)
+        logging.info("response message : %s", raw_text)
         parsed = json.loads(raw_text)
     except json.JSONDecodeError as e:
-        print(e)
+        logging.error(e)
         raise ReceiptParseError(
             error_code="parse_error",
             message="Could not parse receipt data.",
