@@ -58,7 +58,7 @@ def parse_receipt_image(image_bytes: bytes, ext: str, client) -> dict:
             http_status=500,
         ) from e
 
-    raw_text = response.content[0].text.strip()
+    raw_text = response.content[0].text.strip().strip("```json").strip("```")
 
     try:
         logging.info("response message : %s", raw_text)

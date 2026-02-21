@@ -14,7 +14,7 @@ MIME_TYPES: dict[str, str] = {
 }
 
 CLAUDE_MODEL: str = os.environ.get("CLAUDE_MODEL", "claude-sonnet-4-6")
-CLAUDE_MAX_TOKENS: int = int(os.environ.get("CLAUDE_MAX_TOKENS", "20480"))
+CLAUDE_MAX_TOKENS: int = int(os.environ.get("CLAUDE_MAX_TOKENS", "8000"))
 
 SYSTEM_PROMPT: str = """You are a grocery receipt parser. When given an image of a grocery receipt,
 extract all information and return ONLY valid JSON with no additional text, markdown, or explanation.
