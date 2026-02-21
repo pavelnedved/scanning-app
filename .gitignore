@@ -1,0 +1,17 @@
+# Environment — never commit real API keys
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+dist/
+build/
+
+# Test artifacts
+tests/regression/results/*
+!tests/regression/results/.gitkeep
+.coverage
+htmlcov/
+.pytest_cache/

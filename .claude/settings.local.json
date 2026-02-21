@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip show:*)",
+      "Bash(source:*)",
+      "Bash(pip install:*)",
+      "WebFetch(domain:commons.wikimedia.org)",
+      "WebSearch",
+      "Bash(curl:*)",
+      "Bash(file:*)"
+    ]
+  }
+}

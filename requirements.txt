@@ -1,0 +1,10 @@
+# For future Django setup (when network access is available)
+# Django>=5.0,<6.0
+
+# Alternative lightweight frameworks
+flask>=3.0
+# fastapi>=0.100
+
+# Receipt parsing
+anthropic>=0.40.0
+python-dotenv>=1.0.0
