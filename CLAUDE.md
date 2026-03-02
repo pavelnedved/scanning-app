@@ -2,33 +2,30 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Project Overview
+See the root `../CLAUDE.md` for full documentation. Key points for this subproject:
 
-Early-stage Python Flask web application. The project comments in `requirements.txt` suggest Django is the intended framework when network access is available; Flask is currently used as a lightweight alternative.
-
-## Environment Setup
+## Setup & Running
 
 ```bash
-# Activate virtual environment
 source .venv/bin/activate
-
-# Install dependencies
 pip install -r requirements.txt
+pip install -r requirements-dev.txt  # testing
+python app.py                        # dev server on http://127.0.0.1:5000
 ```
 
-## Running the App
+## Testing
 
 ```bash
-python app.py
+pytest                               # all tests
+pytest tests/unit/                   # fast, mocked (no API key needed)
+pytest tests/regression/             # real API calls (requires ANTHROPIC_API_KEY)
+pytest tests/unit/test_parser.py::test_get_extension_jpg  # single test
 ```
 
-The server starts on `http://127.0.0.1:5000` by default.
+## Stack
 
-## Tech Stack
-
-- Python 3.14.3
-- Flask 3.1.2 (current; Django>=5.0 is the planned framework)
+Python 3.14, Flask 3.1 (Django>=5.0 noted as future target), Anthropic SDK, Gunicorn (production), pytest + pytest-mock + pytest-cov (testing).
 
 ## Architecture
 
-Single-file application (`app.py`) with one route. No database, templates, or static files yet.
+`app.py` (factory) → `scanning_app/routes.py` (HTTP, blueprint) → `scanning_app/parser.py` (Claude API) with config in `scanning_app/config.py` (Claude model, system prompt, allowed file types).

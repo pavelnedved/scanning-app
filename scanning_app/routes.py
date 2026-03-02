@@ -1,7 +1,9 @@
 from anthropic import Anthropic
 from flask import Blueprint, current_app, jsonify, request
 
+from .calories import add_calorie_estimates
 from .config import ALLOWED_EXTENSIONS
+from .database import get_all_receipts, get_receipt, save_receipt
 from .parser import NotAReceiptError, ReceiptParseError, get_extension, parse_receipt_image
 
 bp = Blueprint("main", __name__)
@@ -60,8 +62,28 @@ def parse_receipt():
             "message": e.message,
         }), e.http_status
 
+    parsed = add_calorie_estimates(parsed)
+    receipt_id = save_receipt(parsed)
+    parsed["receipt_id"] = receipt_id
     parsed["success"] = True
     return jsonify(parsed), 200
+
+
+@bp.route("/receipts")
+def list_receipts():
+    return jsonify({"receipts": get_all_receipts()}), 200
+
+
+@bp.route("/receipts/<receipt_id>")
+def get_receipt_by_id(receipt_id):
+    receipt = get_receipt(receipt_id)
+    if receipt is None:
+        return jsonify({
+            "success": False,
+            "error": "not_found",
+            "message": f"Receipt '{receipt_id}' not found.",
+        }), 404
+    return jsonify(receipt), 200
 
 
 @bp.route("/")

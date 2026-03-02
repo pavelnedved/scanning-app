@@ -3,6 +3,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
+import scanning_app.database as db
 from scanning_app import create_app
 
 SAMPLE_RECEIPT = {
@@ -54,3 +55,10 @@ def app(mock_anthropic_client):
 @pytest.fixture
 def client(app):
     return app.test_client()
+
+
+@pytest.fixture(autouse=True)
+def reset_db():
+    db._receipts.clear()
+    yield
+    db._receipts.clear()
